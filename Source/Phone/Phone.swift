@@ -279,12 +279,13 @@ public class Phone {
     ///
     /// - parameter address: Intended recipient address in one of the supported formats.
     /// - parameter option: Intended media options - audio only or audio and video - for the call.
+    /// - parameter pin: The meeting pin (optional). 
     /// - parameter completionHandler: A closure to be executed when completed.
     /// - returns: a Call object
     /// - throw:
     /// - since: 1.2.0
     /// - attention: Currently the SDK only supports one active call at a time. Invoking this function while there is an active call will generate an exception.
-    public func dial(_ address: String, option: MediaOption, completionHandler: @escaping ((Result<Call>) -> Void)) {
+    public func dial(_ address: String, option: MediaOption, pin: String? = nil, completionHandler: @escaping ((Result<Call>) -> Void)) {
         prepare(option: option) { error in
             if let error = error {
                 completionHandler(Result.failure(error))
@@ -306,7 +307,7 @@ public class Phone {
                             if let device = self.devices.device {
                                 let media = MediaModel(sdp: localSDP, audioMuted: false, videoMuted: false, reachabilities: reachabilities)
                                 if target.isEndpoint {
-                                    self.client.create(target.address, by: device, localMedia: media, layout: option.layout, queue: self.queue.underlying) { res in
+                                    self.client.create(target.address, PIN: pin, by: device, localMedia: media, layout: option.layout, queue: self.queue.underlying) { res in
                                         self.doLocusResponse(LocusResult.call(target.isGroup, device, option.uuid, tempMediaContext, res, completionHandler))
                                         self.queue.yield()
                                     }
