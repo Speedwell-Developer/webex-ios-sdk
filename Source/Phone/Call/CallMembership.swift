@@ -70,6 +70,13 @@ public struct CallMembership {
     public var state: State {
         return State.from(participant: self.model)
     }
+
+    /// The name of the person in this `CallMembership`.
+    ///
+    /// - since: 1.2.0
+    public var name: String? {
+        return self.model.person?.name
+    }
     
     /// The email address of the person in this `CallMembership`.
     ///
