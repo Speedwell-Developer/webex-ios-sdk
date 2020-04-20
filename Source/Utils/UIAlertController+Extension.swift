@@ -24,19 +24,9 @@ extension UIAlertController {
     
     // Present the alert on top of the visible UIViewController.
     func present(_ animated: Bool, completion: (() -> Void)?) -> UIWindow {
-        // Get new UIWindow at the top of the window hierarchy
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIViewController()
-        window.backgroundColor = UIColor.clear
-        #if swift(>=4.2)
-        window.windowLevel = UIWindow.Level.alert
-        #else
-        window.windowLevel = UIWindowLevelAlert
-        #endif
-        if let rootVC = window.rootViewController {
-            window.makeKeyAndVisible()
-            rootVC.present(self, animated: animated, completion: completion)
-        }
-        return window
+        // Use the application's key window
+        let window = UIApplication.shared.keyWindow
+        window?.rootViewController?.present(self, animated: animated, completion: completion)
+        return window!
     }
 }
