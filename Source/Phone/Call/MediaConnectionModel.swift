@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ struct MediaModel {
     var reachabilities: [String /* media cluster tag */ : ReachabilityModel]?
     var type: String? = "SDP"
     
-    init(sdp: String, audioMuted: Bool, videoMuted: Bool, reachabilities: [String: ReachabilityModel]?) {
+    init(sdp: String?, audioMuted: Bool, videoMuted: Bool, reachabilities: [String: ReachabilityModel]?) {
         self.sdp = sdp
         self.audioMuted = audioMuted
         self.videoMuted = videoMuted

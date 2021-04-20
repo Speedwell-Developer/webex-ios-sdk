@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 import UIKit
 
-// MediaRenderView is an OpenGL backed UIView
+/// MediaRenderView is an OpenGL backed UIView, used to display video, developer should let customized video view inherit it.
 public class MediaRenderView : UIView {
     
     override public class var layerClass: AnyClass {

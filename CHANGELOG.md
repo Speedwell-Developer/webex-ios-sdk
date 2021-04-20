@@ -1,5 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+#### 2.7.0 Releases
+
+- `2.7.0` Releases - [2.7.0](#270)
+
+#### 2.6.0 Releases
+
+- `2.6.0` Releases - [2.6.0](#260)
+
 #### 2.5.0 Releases
 
 - `2.5.0` Releases - [2.5.0](#250)
@@ -69,6 +77,49 @@ All notable changes to this project will be documented in this file.
 - `0.9.137` Releases - [0.9.137](#09137)
 
 ---
+## [2.7.0](https://github.com/webex/webex-ios-sdk/releases/tag/2.7.0)
+Released on 2020-12-14.
+#### Added
+- Support to notify a space call status through SpaceObserver.
+- Support to notify muted by host during a space call.
+- Support to enable Background Noise Removal(BNR), and switch between HP(High Performance) and LP(Low Power) mode.
+- Not sending sensitive headers for unknown site.
+
+#### Updated
+- Update Wme.framework.
+- Update Alamofire dependency to 5.2.0
+- Update ObjectMapper dependency to 4.2.0
+- Remove AlamofireObjectMapper dependency.
+- Fix SpaceClient.listWithActiveCalls() cannot show spaces cross-cluster.
+- Fix App hangs when trying to record a video via UIImagePickerController.
+
+## [2.6.0](https://github.com/webex/webex-ios-sdk/releases/tag/2.6.0)
+Released on 2020-9-28.
+#### Added
+- Support iOS 14 and XCode 12.
+- Support for incoming call notifications for scheduled sapce call.
+- Support for being notified of the end of a space call.
+- Support to join password-protected meetings.
+- Add a new API `Call.videoLayout` to change the video layout during a call.
+- Add a new API `Call.remoteVideoRenderMode` to specify how the remote video adjusts its content to be render in a view.
+- Add a new API `Phone.AdvancedSettings.videoMaxTxFPS` to change the max sending fps for video.
+- Add a new API `Phone.cancel` to cancel the currently outgoing call that has not been connected.
+- Add a new API `SpaceClient.listWithActiveCalls` to get a list of spaces that have ongoing call.
+- Add a new API `Message.isAllMentioned` to check if the message mentioned everyone in space.
+- Add a new API `Message.mentions` to get all people mentioned in the message.
+
+#### Updated
+- Improved video and audio quality
+- API enhancements to improve bandwidth control.
+- Update Wme.framework to 10.8.5.
+- Update Starscream.framework to 4.0.4.
+- Fixed unable to remove a Webex object once it has been created.
+- Fixed switch Camera Error
+- Fixed user in EMEAR org cannot message and call the user in US org.
+- Fixed could not get thumbnail of the WORD, POWERPOINT, EXCEL and PDF file in the message.
+- Fixed video received shows as zoomed and cropped when in iPhone/iPad is in portrait mode.
+- Fixed Participant's video in video call is black.
+
 ## [2.5.0](https://github.com/webex/webex-ios-sdk/releases/tag/2.5.0)
 Released on 2020-3-30.
 #### Added

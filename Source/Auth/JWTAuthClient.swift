@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,9 +51,9 @@ extension JWTTokenModel : Mappable {
 class JWTAuthClient {
 
     func fetchTokenFromJWT(_ jwt: String, queue: DispatchQueue? = nil, completionHandler: @escaping (ServiceResponse<JWTTokenModel>) -> Void) {
-        let request = ServiceRequest.Builder(service: .hydra)
+        Service.hydra.global
             .method(.post)
-            .path("jwt/login")
+            .path("jwt").path("login")
             .headers(["Authorization": jwt,
                       "Content-Type": "text/plain",
                       "User-Agent": UserAgent.string,
@@ -62,7 +62,6 @@ class JWTAuthClient {
                       "Accept-Encoding": "none"])
             .queue(queue)
             .build()
-        
-        request.responseObject(completionHandler)
+            .responseObject(completionHandler)
     }
 }

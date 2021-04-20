@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,12 +48,23 @@ struct ParticipantModel {
         var state: String?
         var callLegId: String?
         var intent: IntentModel?
+        var serverComposed: Bool?
     }
     
     struct StatusModel {
         var audioStatus: String?
         var videoStatus: String?
         var csis: [UInt]?
+    }
+    
+    struct ControlsModel {
+        
+        struct AudioModel {
+            var muted: Bool?
+            var modifiedBy: String?
+        }
+        
+        var audio: AudioModel?
     }
     
     enum State: String {
@@ -69,7 +80,7 @@ struct ParticipantModel {
     var url: String?
     var state: ParticipantModel.State?
     var type: String?
-    var person: PersonModel?
+    var person: LocusParticipantInfoModel?
     var status: ParticipantModel.StatusModel?
     var deviceUrl: String?
     var mediaBaseUrl: String?
@@ -79,6 +90,7 @@ struct ParticipantModel {
     var enableDTMF: Bool?
     var devices: [ParticipantModel.DeviceModel]?
     var removed: Bool?
+    var controls: ControlsModel?
     
     var isJoined: Bool {
         return self.state == .joined
@@ -126,14 +138,33 @@ struct ParticipantModel {
         }
         return false
     }
+
+    var isRemoved: Bool {
+        return self.removed ?? false
+    }
+    
+    var isAudioMuted: Bool {
+        return self.controls?.audio?.muted == true
+    }
+    
+    var modifiedByUUID: String? {
+        return self.controls?.audio?.modifiedBy
+    }
+
+    var device: ParticipantModel.DeviceModel? {
+        if let deviceUrl = self.deviceUrl {
+            return self.devices?.filter{ $0.url == deviceUrl }.first
+        }
+        return nil
+    }
     
     subscript(device url: URL) -> ParticipantModel.DeviceModel? {
         return self.devices?.filter{ $0.url == url.absoluteString }.first
     }
-    
+
 }
 
-struct PersonModel {
+struct LocusParticipantInfoModel {
     var id: String?
     var email: String?
     var name: String?
@@ -173,6 +204,7 @@ extension ParticipantModel: Mappable {
         alertType <- map["alertType"]
         enableDTMF <- map["enableDTMF"]
         removed <- map["removed"]
+        controls <- map["controls"]
     }
     
     class ParticipantStateTransform: TransformType {
@@ -207,6 +239,7 @@ extension ParticipantModel.DeviceModel: Mappable {
         state <- map["state"]
         callLegId <- map["callLegId"]
         intent <- map["intent"]
+        serverComposed <- map["serverComposed"]
     }
 }
 
@@ -219,6 +252,16 @@ extension ParticipantModel.StatusModel: Mappable {
         audioStatus <- map["audioStatus"]
         videoStatus <- map["videoStatus"]
         csis <- map["csis"]
+    }
+}
+
+extension ParticipantModel.ControlsModel: Mappable {
+    
+    init?(map: Map){
+    }
+    
+    mutating func mapping(map: Map) {
+        audio <- map["audio"]
     }
 }
 
@@ -250,7 +293,18 @@ extension ParticipantModel.DeviceModel.IntentModel: Mappable {
     }
 }
 
-extension PersonModel: Mappable {
+extension ParticipantModel.ControlsModel.AudioModel: Mappable {
+    
+    init?(map: Map) {
+    }
+    
+    mutating func mapping(map: Map) {
+        muted <- map["muted"]
+        modifiedBy <- map["meta.modifiedBy"]
+    }
+}
+
+extension LocusParticipantInfoModel: Mappable {
     
     init?(map: Map){
     }

@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,42 +51,176 @@ public class Phone {
     ///
     /// - since: 1.3.0
     public enum DefaultBandwidth: UInt32 {
-        // 177Kbps for 160x90 resolution
+        /// 177Kbps for 160x90 resolution
         case maxBandwidth90p = 177000
-        // 384Kbps for 320x180 resolution
+        /// 384Kbps for 320x180 resolution
         case maxBandwidth180p = 384000
-        // 768Kbps for 640x360 resolution
+        /// 768Kbps for 640x360 resolution
         case maxBandwidth360p = 768000
-        // 2Mbps for 1280x720 resolution
-        case maxBandwidth720p = 2000000
-        // 3Mbps for 1920x1080 resolution
-        case maxBandwidth1080p = 3000000
-        // 4Mbps data session
-        case maxBandwidthSession = 4000000
-        // 64kbps for voice
+        /// 2.5Mbps for 1280x720 resolution
+        case maxBandwidth720p = 2500000
+        /// 4Mbps for 1920x1080 resolution
+        case maxBandwidth1080p = 4000000
+        /// 8Mbps data session
+        case maxBandwidthSession = 8000000
+        /// 64kbps for voice
         case maxBandwidthAudio = 64000
     }
     
-    /// The max bandwidth for audio in unit bps for the call.
+    /// The enumeration of advanced settings.
+    /// These settings are for special use cases and usually do not need to be set.
+    ///
+    /// - since: 2.6.0
+    public enum AdvancedSettings {
+        
+//        public enum MixingStream: UInt8 {
+//            case client = 3, server = 1, `default` = 0
+//        }
+//        case audioForwardErrorCorrection(Bool)
+//        case audioEchoCanccellation(Bool)
+//        case audioMixingStream(MixingStream)
+//        case activeSpeakerOverRTCP(Bool)
+//        case audioAutomaticGainControl(Bool)
+//        case audioNoiseSupression(Bool)
+//        case audioVoiceActivityDetection(Bool)
+//        case deviceUseRemoteSettings(Bool)
+//        case videoReceiverBasedQosSupported(Bool)
+        /// Enable or disable the video mosaic for error-concealment when data loss in network. The defaule is enable.
+        case videoEnableDecoderMosaic(Bool)
+        /// The max sending fps for video. If 0, default value of 30 is used.
+        case videoMaxTxFPS(UInt)
+    }
+
+    /// The options for H.264 video codec license from Cisco Systems, Inc
+    ///
+    /// - since: 2.6.0
+    public enum H264LicenseAction {
+        /// Indicates that the end user has accepted the term.
+        case accept
+        /// Indicates that the end user declined the term.
+        case decline
+        /// Indicates that the end user wants to view the license.
+        case viewLicense(url: URL)
+    }
+    
+    ///  Modes supported by Background Noise Removal
+    ///
+    /// - since: 2.7.0
+    public enum AudioBNRMode: UInt {
+        /// Low Power
+        case LP = 0
+        /// High Performance
+        case HP
+    }
+    
+    /// MARK: - Deprecated
+    /// The max receiving bandwidth for audio in unit bps for the call.
     /// Only effective if set before the start of call.
     /// if 0, default value of 64 * 1000 is used.
     ///
     /// - since: 1.3.0
-    public var audioMaxBandwidth: UInt32 = DefaultBandwidth.maxBandwidthAudio.rawValue
+    @available(*, deprecated)
+    public var audioMaxBandwidth: UInt32 {
+        get {
+            return self.audioMaxRxBandwidth
+        }
+        set {
+            self.audioMaxRxBandwidth = newValue
+        }
+    }
     
-    /// The max bandwidth for video in unit bps for the call.
+    /// MARK: - Deprecated
+    /// The max receiving bandwidth for video in unit bps for the call.
     /// Only effective if set before the start of call.
     /// if 0, default value of 2000*1000 is used.
     ///
     /// - since: 1.3.0
-    public var videoMaxBandwidth: UInt32 = DefaultBandwidth.maxBandwidth720p.rawValue
+    @available(*, deprecated)
+    public var videoMaxBandwidth: UInt32 {
+        get {
+            return self.videoMaxRxBandwidth
+        }
+        set {
+            self.videoMaxRxBandwidth = newValue
+        }
+    }
     
-    /// The max bandwidth for screen sharing in unit bps for the call.
+    /// MARK: - Deprecated
+    /// The max receiving bandwidth for screen sharing in unit bps for the call.
     /// Only effective if set before the start of call.
     /// if 0, default value of 4000*1000 is used.
     ///
     /// - since: 1.3.0
-    public var screenShareMaxBandwidth: UInt32 = DefaultBandwidth.maxBandwidthSession.rawValue
+    @available(*, deprecated)
+    public var screenShareMaxBandwidth: UInt32 {
+        get {
+            return self.sharingMaxRxBandwidth
+        }
+        set {
+            self.sharingMaxRxBandwidth = newValue
+        }
+    }
+    
+    /// The max receiving bandwidth for audio in unit bps for the call.
+    /// Only effective if set before the start of call.
+    /// if 0, default value of 64 * 1000 is used.
+    ///
+    /// - since: 2.6.0
+    public var audioMaxRxBandwidth: UInt32 = DefaultBandwidth.maxBandwidthAudio.rawValue
+    
+    /// The max receiving bandwidth for video in unit bps for the call.
+    /// Only effective if set before the start of call.
+    /// if 0, default value of 2000*1000 is used.
+    ///
+    /// - since: 2.6.0
+    public var videoMaxRxBandwidth: UInt32 = DefaultBandwidth.maxBandwidth720p.rawValue
+    
+    /// The max sending bandwidth for video in unit bps for the call.
+    /// Only effective if set before the start of call.
+    /// if 0, default value of 2000*1000 is used.
+    ///
+    /// - since: 2.6.0
+    public var videoMaxTxBandwidth: UInt32 = DefaultBandwidth.maxBandwidth720p.rawValue
+    
+    /// The max receiving bandwidth for screen sharing in unit bps for the call.
+    /// Only effective if set before the start of call.
+    /// if 0, default value of 4000*1000 is used.
+    ///
+    /// - since: 2.6.0
+    public var sharingMaxRxBandwidth: UInt32 = DefaultBandwidth.maxBandwidthSession.rawValue
+    
+    /// Enable Background Noise Removal
+    /// True as using BNR, False as not. The default is false.
+    ///
+    /// - since: 2.7.0
+    public var audioBNREnabled: Bool = false
+    
+    /// Set Background Noise Removal mode, the default is `.HP`.
+    ///
+    /// - Note: The value is only effective if setting `audioBNREnabled` to true.
+    /// - since: 2.7.0
+    public var audioBNRMode: AudioBNRMode = .HP
+
+    /// The advanced setings for call. Only effective if set before the start of call.
+    ///
+    /// - since: 2.6.0
+    public var advancedSettings: [AdvancedSettings] = []
+
+    /// The default values of the advanced setings for call.
+    ///
+    /// - since: 2.6.0
+    public let defaultAdvancedSettings: [AdvancedSettings] = [.videoEnableDecoderMosaic(true),
+                                                              .videoMaxTxFPS(0),
+//                                                           .deviceUseRemoteSettings(false),
+//                                                           .activeSpeakerOverRTCP(true),
+//                                                           .audioAutomaticGainControl(true),
+//                                                           .audioEchoCanccellation(false),
+//                                                           .audioForwardErrorCorrection(true),
+//                                                           .audioNoiseSupression(false),
+//                                                           .audioVoiceActivityDetection(false),
+//                                                           .audioMixingStream(AdvancedSettings.MixingStream.default),
+//                                                           .videoReceiverBasedQosSupported(true)
+    ]
     
     /// Default camera facing mode of this phone, used as the default when dialing or answering a call.
     /// The default mode is the front camera.
@@ -106,7 +240,7 @@ public class Phone {
     ///
     /// - since: 1.2.0
     public var onIncoming: ((Call) -> Void)?
-    
+
     /// Indicates whether or not the SDK is connected with the Cisco Webex cloud.
     ///
     /// - since: 1.4.0
@@ -119,12 +253,11 @@ public class Phone {
         return self.devices.device != nil
     }
     
-    let webex: Webex
+    weak var webex: Webex?
     let authenticator: Authenticator
     let reachability: ReachabilityService
     let devices: DeviceService
     let client: CallClient
-    let conversations: ConversationClient
     let prompter: H264LicensePrompter
     let queue = SerialQueue()
     let metrics: MetricsEngine
@@ -132,17 +265,38 @@ public class Phone {
     
     private let webSocket: WebSocketService
     private var calls = [String: Call]()
+    private var activeSpaceIds = [String]()
     private var mediaContext: MediaSessionWrapper?
+
+    private var _canceled: Bool = false
+    private var canceled: Bool {
+        get {
+            objc_sync_enter(self)
+            defer { objc_sync_exit(self) }
+            if self._canceled {
+                self._canceled = false
+                return true
+            }
+            return false
+        }
+        set {
+            objc_sync_enter(self)
+            defer { objc_sync_exit(self) }
+            self._canceled = newValue
+        }
+    }
+
+    let phoneId: String = UUID().uuidString
     private let nilJsonStr = "Nil JSON"
     var debug = true;
-    
+
     enum LocusResult {
-        case call(Bool, Device, UUID?, MediaSessionWrapper, ServiceResponse<CallModel>, (Result<Call>) -> Void)
-        case join(Call, ServiceResponse<CallModel>, (Error?) -> Void)
-        case leave(Call, ServiceResponse<CallModel>, (Error?) -> Void)
+        case call(UUID, Device, MediaOption, MediaSessionWrapper, ServiceResponse<LocusModel>, (Result<Call>) -> Void)
+        case join(Call, ServiceResponse<LocusModel>, (Error?) -> Void)
+        case leave(Call, ServiceResponse<LocusModel>, (Error?) -> Void)
         case reject(Call, ServiceResponse<Any>, (Error?) -> Void)
         case alert(Call, ServiceResponse<Any>, (Error?) -> Void)
-        case update(Call, ServiceResponse<CallModel>, ((Error?) -> Void)?)
+        case update(Call, ServiceResponse<LocusModel>, ((Error?) -> Void)?)
         case updateMediaShare(Call, ServiceResponse<Any>, (Error?) -> Void)
     }
 
@@ -150,20 +304,19 @@ public class Phone {
         let device = DeviceService(authenticator: webex.authenticator)
         let tempMetrics = MetricsEngine(authenticator: webex.authenticator, service: device)
         self.init(webex: webex,
-                  devices: device,
-                  reachability: ReachabilityService(authenticator: webex.authenticator, deviceService: device),
-                  client: CallClient(authenticator: webex.authenticator),
-                  conversations: ConversationClient(authenticator: webex.authenticator), metrics: tempMetrics, prompter: H264LicensePrompter(metrics: tempMetrics), webSocket: WebSocketService(authenticator: webex.authenticator))
+                devices: device,
+                reachability: ReachabilityService(authenticator: webex.authenticator, deviceService: device),
+                client: CallClient(authenticator: webex.authenticator),
+                metrics: tempMetrics, prompter: H264LicensePrompter(metrics: tempMetrics), webSocket: WebSocketService(authenticator: webex.authenticator))
     }
     
-    init(webex: Webex, devices:DeviceService, reachability:ReachabilityService, client:CallClient, conversations:ConversationClient, metrics:MetricsEngine, prompter:H264LicensePrompter, webSocket:WebSocketService) {
+    init(webex: Webex, devices:DeviceService, reachability:ReachabilityService, client:CallClient, metrics:MetricsEngine, prompter:H264LicensePrompter, webSocket:WebSocketService) {
         let _ = MediaEngineWrapper.sharedInstance.wmeVersion
         self.webex = webex
         self.authenticator = webex.authenticator
         self.devices = devices
         self.reachability = reachability
         self.client = client
-        self.conversations = conversations
         self.metrics = metrics
         self.prompter = prompter
         self.webSocket = webSocket
@@ -174,7 +327,7 @@ public class Phone {
                     case .recvCall(let model):
                         strong.doLocusEvent(model);
                     case .recvActivity(let model):
-                        strong.doConversationEvent(model);
+                        strong.doActivityEvent(model);
                     case .recvKms(let model):
                         strong.doKmsEvent(model);
                     case .connected:
@@ -202,7 +355,7 @@ public class Phone {
     /// - parameter completionHandler: A closure to be executed when completed, with error if the invocation is illegal or failed, otherwise nil.
     /// - returns: Void
     /// - since: 1.2.0
-    public func register(_ completionHandler: @escaping ((Error?) -> Void)) {
+    public func register(_ completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             self.devices.registerDevice(phone: self, queue: self.queue.underlying) { result in
                 switch result {
@@ -213,7 +366,7 @@ public class Phone {
                             self.me = person
                             self.webSocket.connect(device.webSocketUrl) { [weak self] error in
                                 if let error = error {
-                                    SDKLogger.shared.error(PhoneError.registerFailure.rawValue, error: error)
+                                    PhoneError.registerFailure.report(cause: error)
                                 }
                                 if let strong = self {
                                     strong.queue.underlying.async {
@@ -236,10 +389,7 @@ public class Phone {
                         }
                     }
                 case .failure(let error):
-                    SDKLogger.shared.error(PhoneError.registerFailure.rawValue, error: error)
-                    DispatchQueue.main.async {
-                        completionHandler(error)
-                    }
+                    PhoneError.registerFailure.report(cause: error, errorCallback: completionHandler)
                     self.queue.yield()
                 }
             }
@@ -253,7 +403,7 @@ public class Phone {
     /// - parameter completionHandler: A closure to be executed when completed, with error if the invocation is illegal or failed, otherwise nil.
     /// - returns: Void
     /// - since: 1.2.0
-    public func deregister(_ completionHandler: @escaping ((Error?) -> Void)) {
+    public func deregister(_ completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             self.devices.deregisterDevice(queue: self.queue.underlying) { error in
                 self.disconnectFromWebSocket()
@@ -266,7 +416,7 @@ public class Phone {
             }
         }
     }
-        
+
     /// Makes a call to an intended recipient on behalf of the authenticated user.
     /// It supports the following address formats for the receipient:
     ///
@@ -285,56 +435,62 @@ public class Phone {
     /// - throw:
     /// - since: 1.2.0
     /// - attention: Currently the SDK only supports one active call at a time. Invoking this function while there is an active call will generate an exception.
-    public func dial(_ address: String, option: MediaOption, pin: String? = nil, completionHandler: @escaping ((Result<Call>) -> Void)) {
+    public func dial(_ address: String, option: MediaOption, completionHandler: @escaping (Result<Call>) -> Void) {
+        self.canceled = false
+
         prepare(option: option) { error in
             if let error = error {
                 completionHandler(Result.failure(error))
             }
             else {
-                if self.calls.filter({!$0.value.isGroup || ($0.value.isGroup && $0.value.status == CallStatus.connected)}).count > 0 {
-                    SDKLogger.shared.error(PhoneError.otherActiveCall.failureDesc)
-                    completionHandler(Result.failure(WebexError.illegalOperation(reason: PhoneError.otherActiveCall.rawValue)))
+                if self.calls.filter({$0.value.status == CallStatus.connected}).count > 0 {
+                    PhoneError.otherActiveCall.report(resultCallback: completionHandler)
                     return
                 }
                 self.requestMediaAccess(option: option) {
-                    let tempMediaContext = self.mediaContext ?? MediaSessionWrapper()
-                    tempMediaContext.prepare(option: option, phone: self)
-                    let localSDP = tempMediaContext.getLocalSdp()
+                    let session = self.mediaContext ?? MediaSessionWrapper()
+                    session.prepare(option: option, phone: self)
+                    let localSDP = session.getLocalSdp()
                     let reachabilities = self.reachability.feedback?.reachabilities
-                    
+
                     CallClient.DialTarget.lookup(address, by: Webex(authenticator: self.authenticator)) { target in
                         self.queue.sync {
                             if let device = self.devices.device {
+                                if self.canceled {
+                                    PhoneError.callCanceled.report(resultCallback: completionHandler)
+                                    self.queue.yield()
+                                    return
+                                }
                                 let media = MediaModel(sdp: localSDP, audioMuted: false, videoMuted: false, reachabilities: reachabilities)
-                                if target.isEndpoint {
-                                    self.client.create(target.address, PIN: pin, by: device, localMedia: media, layout: option.layout, queue: self.queue.underlying) { res in
-                                        self.doLocusResponse(LocusResult.call(target.isGroup, device, option.uuid, tempMediaContext, res, completionHandler))
+
+                                let correlationId = UUID()
+                                switch target {
+                                case .callable(let callee):
+                                    self.client.call(callee, correlationId: correlationId, by: device, option: option, localMedia: media, queue: self.queue.underlying) { res in
+                                        self.doLocusResponse(LocusResult.call(correlationId, device, option, session, res, completionHandler))
                                         self.queue.yield()
                                     }
-                                }
-                                else {
-                                    self.conversations.getLocusUrl(conversation: target.address, by: device, queue: self.queue.underlying) { res in
-                                        if let url = res.result.data?.locusUrl {
-                                            self.client.join(url, by: device, localMedia: media, layout: option.layout, queue: self.queue.underlying) { resNew in
-                                                self.doLocusResponse(LocusResult.call(target.isGroup, device, option.uuid, tempMediaContext, resNew, completionHandler))
+                                case .joinable(let joinee):
+                                    self.client.getOrCreatePermanentLocus(conversation: joinee, by: device, queue: self.queue.underlying) { res in
+                                        if self.canceled {
+                                            PhoneError.callCanceled.report(resultCallback: completionHandler)
+                                            self.queue.yield()
+                                        }
+                                        else if let url = res.data {
+                                            self.client.join(url, correlationId: correlationId, by: device, option: option, localMedia: media, queue: self.queue.underlying) { joinRes in
+                                                self.doLocusResponse(LocusResult.call(correlationId, device, option, session, joinRes, completionHandler))
                                                 self.queue.yield()
                                             }
                                         }
-                                        else if let error = res.result.error {
-                                            SDKLogger.shared.error(PhoneError.failureCall.rawValue, error: error)
-                                            DispatchQueue.main.async {
-                                                completionHandler(Result.failure(error))
-                                            }
+                                        else {
+                                            PhoneError.failureCall.report(cause: res.error, resultCallback: completionHandler)
                                             self.queue.yield()
                                         }
                                     }
                                 }
                             }
                             else {
-                                SDKLogger.shared.error("Failure: unregistered device")
-                                DispatchQueue.main.async {
-                                    completionHandler(Result.failure(WebexError.unregistered))
-                                }
+                                WebexError.unregistered.report(resultCallback: completionHandler)
                                 self.queue.yield()
                             }
                         }
@@ -344,13 +500,32 @@ public class Phone {
         }
     }
     
+    /// Cancel the currently outgoing call that has not been connected.
+    /// - since: 2.6.0
+    public func cancel() {
+        self.canceled = true
+    }
+
     /// Pops up an Alert for the end user to approve the use of H.264 codec license from Cisco Systems, Inc.
     ///
-    /// - returns: Void
+    /// - parameter completionHandler: A closure to be executed when completed.
     /// - note: Invoking this function is optional since the alert will appear automatically during the first video call.
     /// - since: 1.2.0
-    public func requestVideoCodecActivation() {
-        self.prompter.check() { _ in }
+    public func requestVideoCodecActivation(completionHandler: ((H264LicenseAction) -> Void)? = nil) {
+        self.prompter.check() { action in
+            if let completionHandler = completionHandler {
+                completionHandler(action)
+            }
+            else {
+                switch action {
+                case .viewLicense(let url):
+                    UIApplication.shared.open(url, options:[:], completionHandler: nil)
+                default:
+                    break
+                }
+            }
+            
+        }
     }
     
     /// Prevents Cisco Webex iOS SDK from poping up an Alert for the end user
@@ -396,30 +571,21 @@ public class Phone {
         calls[call.url] = nil
         SDKLogger.shared.info("Remove call for call url:\(call.url)")
     }
-    
+
     func acknowledge(call: Call, completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             if self.calls.filter({ $0.key != call.url }).count > 0 {
-                SDKLogger.shared.error(PhoneError.otherActiveCall.failureDesc)
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.illegalOperation(reason: PhoneError.otherActiveCall.rawValue))
-                }
+                PhoneError.otherActiveCall.report(errorCallback: completionHandler)
                 self.queue.yield()
                 return
             }
             if call.direction == Call.Direction.outgoing {
-                SDKLogger.shared.error(PhoneError.unSupportFunction.failureDesc)
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.illegalOperation(reason: PhoneError.unSupportFunction.rawValue))
-                }
+                PhoneError.unSupportFunction.report(errorCallback: completionHandler)
                 self.queue.yield()
                 return
             }
             if call.direction == Call.Direction.incoming && call.status != CallStatus.initiated {
-                SDKLogger.shared.error("Failure: Not initialted call")
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.illegalStatus(reason: "Not initialted call"))
-                }
+                WebexError.illegalStatus(reason: "Not initialted call").report(errorCallback: completionHandler)
                 self.queue.yield()
                 return
             }
@@ -430,10 +596,7 @@ public class Phone {
                 }
             }
             else {
-                SDKLogger.shared.error("Failure: Missing call URL")
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.serviceFailed(code: -7000, reason: "Missing call URL"))
-                }
+                WebexError.serviceFailed(reason: "Missing call URL").report(errorCallback: completionHandler)
                 self.queue.yield()
             }
         }
@@ -442,37 +605,32 @@ public class Phone {
     func answer(call: Call, option: MediaOption, completionHandler: @escaping (Error?) -> Void) {
         DispatchQueue.main.async {
             if self.calls.filter({ $0.key != call.url && $0.value.status == CallStatus.connected}).count > 0 {
-                SDKLogger.shared.error(PhoneError.otherActiveCall.failureDesc)
-                completionHandler(WebexError.illegalOperation(reason: PhoneError.otherActiveCall.rawValue))
+                PhoneError.otherActiveCall.report(errorCallback: completionHandler)
                 return
             }
             if call.direction == Call.Direction.outgoing {
-                SDKLogger.shared.error(PhoneError.unSupportFunction.failureDesc)
-                completionHandler(WebexError.illegalOperation(reason: PhoneError.unSupportFunction.rawValue))
+                PhoneError.unSupportFunction.report(errorCallback: completionHandler)
                 return
             }
             if call.direction == Call.Direction.incoming {
                 if call.status == CallStatus.connected {
-                    SDKLogger.shared.error(PhoneError.alreadyConnected.failureDesc)
-                    completionHandler(WebexError.illegalStatus(reason: PhoneError.alreadyConnected.rawValue))
+                    PhoneError.alreadyConnected.report(errorCallback: completionHandler)
                     return
                 }
                 else if call.status == CallStatus.disconnected {
-                    SDKLogger.shared.error(PhoneError.alreadyDisconnected.failureDesc)
-                    completionHandler(WebexError.illegalStatus(reason: PhoneError.alreadyDisconnected.rawValue))
+                    PhoneError.alreadyDisconnected.report(errorCallback: completionHandler)
                     return
                 }
             }
             if let uuid = option.uuid {
                 call.uuid = uuid
             }
-            
             self.requestMediaAccess(option: option) {
-                let tempMediaContext = call.mediaSession
-                tempMediaContext.prepare(option: option, phone: self)
-                let media = MediaModel(sdp: tempMediaContext.getLocalSdp(), audioMuted: false, videoMuted: false, reachabilities: self.reachability.feedback?.reachabilities)
+                let session = call.mediaSession
+                session.prepare(option: option, phone: self)
+                let media = MediaModel(sdp: session.getLocalSdp(), audioMuted: false, videoMuted: false, reachabilities: self.reachability.feedback?.reachabilities)
                 self.queue.sync {
-                    self.client.join(call.url, by: call.device, localMedia: media, layout: option.layout, queue: self.queue.underlying) { res in
+                    self.client.join(call.url, correlationId: call.correlationId, by: call.device, option: option, localMedia: media, queue: self.queue.underlying) { res in
                         self.doLocusResponse(LocusResult.join(call, res, completionHandler))
                         self.queue.yield()
                     }
@@ -484,42 +642,35 @@ public class Phone {
     func reject(call: Call, completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             if call.direction == Call.Direction.outgoing {
-                SDKLogger.shared.error(PhoneError.unSupportFunction.failureDesc)
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.illegalOperation(reason: PhoneError.unSupportFunction.rawValue))
-                }
+                PhoneError.unSupportFunction.report(errorCallback: completionHandler)
                 self.queue.yield()
                 return
             }
             if call.direction == Call.Direction.incoming {
                 if call.status == CallStatus.connected {
-                    SDKLogger.shared.error(PhoneError.alreadyConnected.failureDesc)
-                    DispatchQueue.main.async {
-                        completionHandler(WebexError.illegalStatus(reason: PhoneError.alreadyConnected.rawValue))
-                    }
+                    PhoneError.alreadyConnected.report(errorCallback: completionHandler)
                     self.queue.yield()
                     return
                 }
                 else if call.status == CallStatus.disconnected {
-                    SDKLogger.shared.error(PhoneError.alreadyDisconnected.failureDesc)
-                    DispatchQueue.main.async {
-                        completionHandler(WebexError.illegalStatus(reason: PhoneError.alreadyDisconnected.rawValue))
-                    }
+                    PhoneError.alreadyDisconnected.report(errorCallback: completionHandler)
                     self.queue.yield()
                     return
                 }
             }
             if let url = call.model.locusUrl {
-                self.client.decline(url, by: call.device, queue: self.queue.underlying) { res in
-                    self.doLocusResponse(LocusResult.reject(call, res, completionHandler))
+                if call.isActive {
+                    self.client.decline(url, by: call.device, queue: self.queue.underlying) { res in
+                        self.doLocusResponse(LocusResult.reject(call, res, completionHandler))
+                        self.queue.yield()
+                    }
+                }else {
+                    WebexError.serviceFailed(reason: "Cannot decline a non-active schedule call").report(errorCallback: completionHandler)
                     self.queue.yield()
                 }
             }
             else {
-                SDKLogger.shared.error("Failure: Missing call URL")
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.serviceFailed(code: -7000, reason: "Missing call URL"))
-                }
+                WebexError.serviceFailed(reason: "Missing call URL").report(errorCallback: completionHandler)
                 self.queue.yield()
             }
         }
@@ -528,22 +679,17 @@ public class Phone {
     func hangup(call: Call, completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             if call.status == CallStatus.disconnected {
-                SDKLogger.shared.warn("Warning: " + PhoneError.alreadyDisconnected.rawValue)
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.illegalStatus(reason: PhoneError.alreadyDisconnected.rawValue))
-                }
+                PhoneError.alreadyDisconnected.report(errorCallback: completionHandler)
                 self.queue.yield()
                 return
             }
             if let url = call.model.myself?.url {
                 if #available(iOS 11.2, *), call.sendingScreenShare {
-                    self.stopSharing(call: call) {
-                        _ in
+                    self.stopSharing(call: call) { _ in
                         SDKLogger.shared.warn("Unshare screen by call end!")
                     }
                     call.mediaSession.stopLocalScreenShare()
                 }
-                
                 
                 self.client.leave(url, by: call.device, queue: self.queue.underlying) { res in
                     self.doLocusResponse(LocusResult.leave(call, res, completionHandler))
@@ -551,10 +697,21 @@ public class Phone {
                 }
             }
             else {
-                SDKLogger.shared.error("Failure: Missing self participant URL")
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.serviceFailed(code: -7000, reason: "Missing self participant URL"))
+                WebexError.serviceFailed(reason: "Missing self participant URL").report(errorCallback: completionHandler)
+                self.queue.yield()
+            }
+        }
+    }
+    
+    func layout(call: Call, layout: MediaOption.VideoLayout) {
+        self.queue.sync {
+            if let url = call.model.myself?.url {
+                self.client.layout(url, by: call.device.deviceUrl.absoluteString, layout: layout, queue: self.queue.underlying) { res in
+                    self.queue.yield()
                 }
+            }
+            else {
+                WebexError.serviceFailed(reason: "Missing self participant URL").report()
                 self.queue.yield()
             }
         }
@@ -567,12 +724,12 @@ public class Phone {
                 guard let url = call.model.myself?.mediaBaseUrl,
                     let sdp = call.model.mediaConnections?.first?.localSdp?.sdp ?? localSDP,
                     let mediaID = call.model.myself?[device: call.device.deviceUrl]?.mediaConnections?.first?.mediaId ?? call.model.mediaConnections?.first?.mediaId else {
-                    completionHandler(WebexError.serviceFailed(code: -7000, reason: "Missing media data"))
+                    WebexError.serviceFailed(reason: "Missing media data").report(errorCallback: completionHandler)
                     self.queue.yield()
                     return
                 }
                 let media = MediaModel(sdp: localSDP == nil ? sdp:localSDP!, audioMuted: !sendingAudio, videoMuted: !sendingVideo, reachabilities: reachabilities)
-                self.client.update(url,by: mediaID,by: call.device, localMedia: media, queue: self.queue.underlying) { res in
+                self.client.update(url, mediaID: mediaID, localMedia: media, by: call.device, queue: self.queue.underlying) { res in
                     self.doLocusResponse(LocusResult.update(call, res, completionHandler))
                     self.queue.yield()
                 }
@@ -597,20 +754,47 @@ public class Phone {
             }
         }
     }
+
+    func fetchActiveCalls(queue: DispatchQueue? = nil, completionHandler: @escaping (Result<[LocusModel]>) -> Void) {
+        var loci = [LocusModel]()
+        var completion:((ServiceResponse<LociResponseModel>) -> Void)?
+        completion = { response in
+            switch response.result {
+            case .success(let lociModel):
+                if let locusModel = lociModel.loci {
+                    loci = loci + locusModel
+                }
+                if let remoteClusterUrl = lociModel.remoteLocusClusterUrls?.first {
+                    self.fetchLoci(remoteClusterUrl, queue: queue ?? self.queue.underlying, completionHandler: completion!)
+                    return
+                }
+                completionHandler(.success(loci))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+        self.fetchLoci(queue: queue ?? self.queue.underlying, completionHandler: completion!)
+    }
     
+    private func fetchLoci(_ clusterUrl:String? = nil, queue: DispatchQueue, completionHandler: @escaping (ServiceResponse<LociResponseModel>) -> Void) {
+        if let clusterUrl = clusterUrl {
+            self.client.fetch(clusterUrl:clusterUrl, queue: queue, completionHandler: completionHandler)
+        }
+        else if let device = self.devices.device {
+            self.client.fetch(by: device, queue: queue, completionHandler: completionHandler)
+        }
+    }
+
     func letIn(call:Call, memberships:[CallMembership], completionHandler: @escaping (Error?) -> Void) {
         self.queue.sync {
             if let url = call.model.locusUrl {
-                self.client.letIn(url, memberships: memberships, queue: self.queue.underlying) { res in
+                self.client.admit(url, memberships: memberships, queue: self.queue.underlying) { res in
                     self.doLocusResponse(LocusResult.update(call, res, completionHandler))
                     self.queue.yield()
                 }
             }
             else {
-                SDKLogger.shared.error("Failure: Missing call URL")
-                DispatchQueue.main.async {
-                    completionHandler(WebexError.serviceFailed(code: -7000, reason: "Missing call URL"))
-                }
+                WebexError.serviceFailed(reason: "Missing call URL").report(errorCallback: completionHandler)
                 self.queue.yield()
             }
         }
@@ -630,75 +814,66 @@ public class Phone {
     }
     
     @available(iOS 11.2,*)
-    func startSharing(call:Call, completionHandler: @escaping ((Error?) -> Void)) {
+    func startSharing(call:Call, completionHandler: @escaping (Error?) -> Void) {
         if !call.mediaSession.hasScreenShare {
-            let error = WebexError.illegalOperation(reason: "Call media option unsupport content share.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.illegalOperation(reason: "Call media option unsupport content share.").report(errorCallback: completionHandler)
             return
         }
-        
         if call.isScreenSharedBySelfDevice() {
-            let error = WebexError.illegalStatus(reason: "Already shared by self.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.illegalStatus(reason: "Already shared by self.").report(errorCallback: completionHandler)
             return
         }
-        
         if call.status != .connected {
-            let error = WebexError.illegalStatus(reason: "No active call.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.illegalStatus(reason: "No active call.").report(errorCallback: completionHandler)
             return
         }
-        
         let floor : MediaShareModel.MediaShareFloor = MediaShareModel.MediaShareFloor(beneficiary: call.model.myself, disposition: MediaShareModel.ShareFloorDisposition.granted, granted: nil, released: nil, requested: nil, requester: call.model.myself)
-        
         let mediaShare : MediaShareModel = MediaShareModel(shareType: MediaShareModel.MediaShareType.screen, url:call.model.mediaShareUrl, shareFloor: floor)
         self.updateMeidaShare(call: call, mediaShare: mediaShare, completionHandler: completionHandler)
-
     }
     
     @available(iOS 11.2,*)
-    func stopSharing(call:Call, completionHandler: @escaping ((Error?) -> Void)) {
+    func stopSharing(call:Call, completionHandler: @escaping (Error?) -> Void) {
         if !call.mediaSession.hasScreenShare {
-            let error = WebexError.illegalOperation(reason: "Call media option unsupport content share.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.illegalOperation(reason: "Call media option unsupport content share.").report(errorCallback: completionHandler)
             return
         }
-        
         if !call.isScreenSharedBySelfDevice() {
-            let error = WebexError.illegalStatus(reason: "Local share screen not start.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.illegalStatus(reason: "Local share screen not start.").report(errorCallback: completionHandler)
             return
         }
-        
         let floor : MediaShareModel.MediaShareFloor = MediaShareModel.MediaShareFloor(beneficiary: call.model.myself, disposition: MediaShareModel.ShareFloorDisposition.released, granted: nil, released: nil, requested: nil, requester: call.model.myself)
-        
         let mediaShare : MediaShareModel = MediaShareModel(shareType: MediaShareModel.MediaShareType.screen, url:call.model.mediaShareUrl, shareFloor: floor)
         self.updateMeidaShare(call: call, mediaShare: mediaShare, completionHandler: completionHandler)
     }
-    
+
     private func doLocusResponse(_ ret: LocusResult) {
         switch ret {
-        case .call(let group, let device, let uuid, let media, let res, let completionHandler):
+        case .call(let correlationId, let device, let option, let media, let res, let completionHandler):
             switch res.result {
             case .success(let model):
                 SDKLogger.shared.debug("Receive call locus response: \(model.toJSONString(prettyPrint: self.debug) ?? nilJsonStr)")
                 if model.isValid {
-                    let call = Call(model: model, device: device, media: media, direction: Call.Direction.outgoing, group: (group ? group : !model.isOneOnOne), uuid: uuid)
+                    let call = Call(model: model, device: device, media: media, direction: Call.Direction.outgoing, group: !model.isOneOnOne, option: option, correlationId: correlationId)
+                    if let uuid = option.uuid {
+                        call.uuid = uuid
+                    }
                     if call.isInIllegalStatus {
+                        let error = WebexError.illegalStatus(reason: "The previous session did not end")
+                        PhoneError.failureCall.report(cause: error, resultCallback: completionHandler)
                         DispatchQueue.main.async {
-                            let error = WebexError.illegalStatus(reason: "The previous session did not end")
-                            SDKLogger.shared.error(PhoneError.failureCall.rawValue, error: error)
-                            completionHandler(Result.failure(error))
                             call.end(reason: Call.DisconnectReason.error(error))
                         }
                         return
                     }
                     self.add(call: call)
+                    if self.canceled {
+                        PhoneError.callCanceled.report(resultCallback: completionHandler)
+                        self.hangup(call: call) { _ in
+                            SDKLogger.shared.debug("Call was hung up due to validate dial")
+                        }
+                        return
+                    }
                     DispatchQueue.main.async {
                         if call.model.myself?.isInLobby == true {
                             call.startKeepAlive()
@@ -709,13 +884,10 @@ public class Phone {
                     }
                 }
                 else {
-                    completionHandler(Result.failure(WebexError.serviceFailed(code: -7000, reason: "Failure: Missing required information when dial")))
+                    WebexError.serviceFailed(reason: "Failure: Missing required information when dial").report(resultCallback: completionHandler)
                 }
             case .failure(let error):
-                SDKLogger.shared.error(PhoneError.failureCall.rawValue, error: error)
-                DispatchQueue.main.async {
-                    completionHandler(Result.failure(error))
-                }
+                PhoneError.failureCall.report(cause: error, resultCallback: completionHandler)
             }
         case .join(let call, let res, let completionHandler):
             switch res.result {
@@ -805,9 +977,8 @@ public class Phone {
         }
         
     }
-    
-    private func doLocusEvent(_ model: CallModel) {
-        SDKLogger.shared.debug("Receive locus event: \(model.toJSONString(prettyPrint: self.debug) ?? nilJsonStr)")
+
+    private func doLocusEvent(_ model: LocusModel) {
         guard let url = model.callUrl else {
             SDKLogger.shared.error("CallModel is missing call url")
             return
@@ -823,7 +994,7 @@ public class Phone {
             // a race condition and this MAY be the solution to not dropping a call before reregistration has been completed.
             // If so it needs improvement, if not it may be able to be dropped.
             if model.isValid {
-                let call = Call(model: model, device: device, media: self.mediaContext ?? MediaSessionWrapper(), direction: Call.Direction.incoming, group: !model.isOneOnOne, uuid: nil)
+                let call = Call(model: model, device: device, media: self.mediaContext ?? MediaSessionWrapper(), direction: Call.Direction.incoming, group: !model.isOneOnOne, correlationId:UUID())
                 self.add(call: call)
                 SDKLogger.shared.info("Receive incoming call: \(call.model.callUrl ?? call.uuid.uuidString)")
                 DispatchQueue.main.async {
@@ -836,39 +1007,121 @@ public class Phone {
             // TODO: need to support other device joined case
         }
         else {
-            SDKLogger.shared.info("Cannot handle the CallModel.")
+            SDKLogger.shared.info("Cannot handle the CallModel for a call.")
+        }
+        
+        // Handle callModel for a space call event.
+        guard model.isValid, !model.isOneOnOne, let spaceUrl = model.spaceUrl, let spaceId = WebexId.from(url: spaceUrl , by: self.devices.device)?.base64Id else {
+            SDKLogger.shared.info("Cannot handle the CallModel for a space call event.")
+            return
+        }
+        if model.isActive && !activeSpaceIds.contains(spaceId) {
+            self.activeSpaceIds.append(spaceId)
+            DispatchQueue.main.async {
+                self.webex?.spaces.onEvent?(.spaceCallStarted(spaceId))
+            }
+        }
+        else if !model.isActive && activeSpaceIds.contains(spaceId) {
+            self.activeSpaceIds.removeObject(spaceId)
+            DispatchQueue.main.async {
+                self.webex?.spaces.onEvent?(.spaceCallEnded(spaceId))
+            }
         }
     }
-    
-    private func doConversationEvent(_ model: ActivityModel){
-        SDKLogger.shared.debug("Receive Conversation Acitivity: \(model.toJSONString(prettyPrint: self.debug) ?? nilJsonStr)")
-        if let verb = model.verb {
-            switch verb {
-            case .post, .share, .delete:
-                self.webex.messages.handle(activity: model)
-            case .acknowledge, .add, .leave, .assignModerator, .unassignModerator:
-                self.webex.memberships.handle(activity: model)
-            case .create, .update:
-                self.webex.spaces.handle(activity: model)
-            default:
-                SDKLogger.shared.error("Not a valid message \(model.uuid ?? (model.toJSONString() ?? ""))")
+
+    private func doActivityEvent(_ activity: ActivityModel){
+        SDKLogger.shared.debug("Receive acitivity: \(activity.toJSONString(prettyPrint: self.debug) ?? nilJsonStr)")
+        if let clientTempId = activity.clientTempId, clientTempId.starts(with: self.phoneId) {
+            SDKLogger.shared.error("The activity is sent by self");
+            return
+        }
+        
+        func fire(_ event: Any?) {
+            DispatchQueue.main.async {
+                if let event = event as? MembershipEvent {
+                    self.webex?.memberships.onEvent?(event)
+                    self.webex?.memberships.onEventWithPayload?(event, WebexEventPayload(activity: activity, person: self.me))
+                }
+                else if let event = event as? SpaceEvent {
+                    self.webex?.spaces.onEvent?(event)
+                    self.webex?.spaces.onEventWithPayload?(event, WebexEventPayload(activity: activity, person: self.me))
+                }
+                else if let event = event as? MessageEvent {
+                    self.webex?.messages.onEvent?(event)
+                    self.webex?.messages.onEventWithPayload?(event, WebexEventPayload(activity: activity, person: self.me))
+                }
+            }
+        }
+        
+        if let verb = activity.verb {
+            let target = activity.target?.objectType
+            let object = activity.object?.objectType
+            let clusterId = self.devices.device?.getClusterId(url: activity.url)
+            
+            if verb == .add && target == ObjectType.conversation && object == ObjectType.person {
+                fire(MembershipEvent.created(Membership(activity: activity, clusterId: clusterId)))
+            }
+            else if verb == .leave && target == ObjectType.conversation && object == ObjectType.person {
+                fire(MembershipEvent.deleted(Membership(activity: activity, clusterId: clusterId)))
+            }
+            else if (verb == .assignModerator || verb == .unassignModerator) && target == ObjectType.conversation && object == ObjectType.person  {
+                fire(MembershipEvent.update(Membership(activity: activity, clusterId: clusterId)))
+            }
+            else if verb == .acknowledge && target == ObjectType.conversation && object == ObjectType.activity {
+                fire(MembershipEvent.messageSeen(Membership(activity: activity, clusterId: clusterId), lastSeenMessage: WebexId(type: .message, cluster: clusterId, uuid: activity.object?.id ?? "").base64Id))
+            }
+            else if verb == .create && object == ObjectType.conversation, let conv = activity.object as? ConversationModel, let convId = conv.id {
+                let base64Id = WebexId(type: .room, cluster: clusterId, uuid: convId).base64Id
+                self.webex?.spaces.get(spaceId: base64Id) { res in
+                    fire(res.result.data == nil ? nil : SpaceEvent.create(res.result.data!))
+                }
+            }
+            else if verb == .update && object == ObjectType.conversation && target == ObjectType.conversation, let conv = activity.target as? ConversationModel, let convId = conv.id {
+                let base64Id = WebexId(type: .room, cluster: clusterId, uuid: convId).base64Id
+                self.webex?.spaces.get(spaceId: base64Id) { res in
+                    fire(res.result.data == nil ? nil : SpaceEvent.update(res.result.data!))
+                }
+            }
+            else if verb == .post || verb == .share, let convUrl = activity.conversationUrl {
+                self.webex?.messages.decrypt(activity: activity, of: convUrl) { decrypted in
+                    let message = Message(activity: decrypted, clusterId: clusterId, person: self.me)
+                    fire(MessageEvent.messageReceived(self.webex?.messages.cacheMessageIfNeeded(message: message) ?? message))
+                }
+            }
+            else if verb == .update, let convUrl = activity.conversationUrl, let content = activity.object as? ContentModel {
+                self.webex?.messages.decrypt(activity: activity, of: convUrl) { decrypted in
+                    self.webex?.messages.doMessageUpdated(content: content) { event in
+                        fire(event)
+                    }
+                }
+            }
+            else if verb == .delete && object == ObjectType.activity, let deleted = activity.object?.id {
+                self.webex?.messages.doMessageDeleted(messageId: WebexId(type: .message, cluster: clusterId, uuid: deleted)) { event in
+                    fire(event)
+                }
+            }
+            else {
+                SDKLogger.shared.error("Not a valid activity \(activity.id ?? (activity.toJSONString() ?? ""))")
             }
         }
     }
     
     private func doKmsEvent( _ model: KmsMessageModel){
         SDKLogger.shared.debug("Receive Kms Message: \(model.toJSONString(prettyPrint: self.debug) ?? nilJsonStr)")
-        self.webex.messages.handle(kms: model)
+        self.webex?.messages.handle(kms: model)
     }
     
     private func prepare(option: MediaOption, completionHandler: @escaping (Error?) -> Void) {
         if option.hasVideo {
-            self.prompter.check() { activated in
-                if activated {
+            self.prompter.check() { action in
+                switch action {
+                case .accept:
                     completionHandler(nil)
-                }
-                else {
+                case .decline:
                     completionHandler(WebexError.requireH264)
+                case .viewLicense(let url):
+                    UIApplication.shared.open(url, options:[:], completionHandler: nil)
+                    completionHandler(WebexError.interruptedByViewingH264License)
                 }
             }
         }
@@ -878,20 +1131,18 @@ public class Phone {
             }
         }
     }
-    
+
     private func fetchActiveCalls() {
         SDKLogger.shared.info("Fetch call infos")
-        if let device = self.devices.device {
-            self.client.fetch(by: device, queue: self.queue.underlying) { res in
-                switch res.result {
-                case .success(let models):
-                    for model in models {
-                        self.doLocusEvent(model)
-                    }
-                    SDKLogger.shared.info("Success: fetch call infos")
-                case .failure(let error):
-                    SDKLogger.shared.error("Failure", error: error)
+        self.fetchActiveCalls(queue: self.queue.underlying) { result in
+            switch result {
+            case .success(let models):
+                for model in models {
+                    self.doLocusEvent(model)
                 }
+                SDKLogger.shared.info("Success: fetch call infos")
+            case .failure(let error):
+                SDKLogger.shared.error("Failure", error: error)
             }
         }
     }
@@ -931,7 +1182,7 @@ public class Phone {
         if let device = self.devices.device {
             self.webSocket.connect(device.webSocketUrl) { [weak self] error in
                 if let error = error {
-                    SDKLogger.shared.error(PhoneError.registerFailure.rawValue, error: error)
+                    PhoneError.registerFailure.report(cause: error)
                 }
                 self?.queue.underlying.async {
                     self?.fetchActiveCalls()
@@ -962,20 +1213,16 @@ public class Phone {
         }
     }
     
-    func updateMeidaShare(call:Call, mediaShare: MediaShareModel,completionHandler: @escaping ((Error?) -> Void)) {
-        if let mediaShareUrl = mediaShare.url {
-            self.client.updateMediaShare(mediaShare, by: call.device, mediaShareUrl: mediaShareUrl, queue: self.queue.underlying) { res in
+    func updateMeidaShare(call:Call, mediaShare: MediaShareModel,completionHandler: @escaping (Error?) -> Void) {
+        if let url = mediaShare.url {
+            self.client.updateMediaShare(mediaShare, shareUrl: url, by: call.device, queue: self.queue.underlying) { res in
                 self.doLocusResponse(LocusResult.updateMediaShare(call, res,completionHandler))
                 self.queue.yield()
             }
         } else {
-            let error = WebexError.serviceFailed(code: -700, reason: "Unsupport media share.")
-            completionHandler(error)
-            SDKLogger.shared.error("Failure", error: error)
+            WebexError.serviceFailed(reason: "Unsupport media share.").report(errorCallback: completionHandler)
         }
-        
     }
-
 }
 
 enum PhoneError: String {
@@ -986,8 +1233,25 @@ enum PhoneError: String {
     case alreadyConnected = "Already connected"
     case failureCall = "Failure call"
     case otherActiveCall = "There are other active calls"
+    case callCanceled = "The call be canceled by user"
     
     var failureDesc: String {
         return "Failure: " + self.rawValue
     }
+
+    func report<T>(cause: Error? = nil, by queue: DispatchQueue? = nil, resultCallback: ((Result<T>) -> Void)? = nil) {
+        (queue ?? DispatchQueue.main).async {
+            SDKLogger.shared.error(self.rawValue, error: cause)
+            resultCallback?(Result.failure(cause ?? WebexError.illegalOperation(reason: self.rawValue)))
+        }
+    }
+
+    func report(cause: Error? = nil, by queue: DispatchQueue? = nil, errorCallback: ((Error?) -> Void)? = nil) {
+        (queue ?? DispatchQueue.main).async {
+            SDKLogger.shared.error(self.rawValue, error: cause)
+            errorCallback?(cause ?? WebexError.illegalOperation(reason: self.rawValue))
+        }
+    }
 }
+
+

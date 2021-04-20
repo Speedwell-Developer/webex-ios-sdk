@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,5 +31,14 @@ extension URL {
         }
         
         return resultParameters
+    }
+    
+    func appending(_ queryItem: String, value: String?) -> URL {
+        guard var urlComponents = URLComponents(string: absoluteString) else { return absoluteURL }
+        var queryItems: [URLQueryItem] = urlComponents.queryItems ??  []
+        let queryItem = URLQueryItem(name: queryItem, value: value)
+        queryItems.append(queryItem)
+        urlComponents.queryItems = queryItems
+        return urlComponents.url!
     }
 }

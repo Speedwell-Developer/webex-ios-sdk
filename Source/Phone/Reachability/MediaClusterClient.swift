@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,8 @@ class MediaClusterClient {
     }
     
     func get(queue: DispatchQueue? = nil, completionHandler: @escaping (ServiceResponse<MediaCluster>) -> Void) {
-        let request = ServiceRequest.Builder(authenticator, service: .calliopeDiscovery, device: self.deviceService.device)
+        let request = Service.calliopeDiscovery.homed(for: self.deviceService.device)
+            .authenticator(self.authenticator)
             .path("clusters")
             .queue(queue)
             .build()

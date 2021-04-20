@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,20 +19,15 @@
 // THE SOFTWARE.
 
 import Foundation
+import ObjectMapper
 
-/// Service response for a request.
-///
-/// - since: 1.2.0
-public struct ServiceResponse<T> {
+struct ItemsModel<T: Mappable> : Mappable {
     
-    /// Represents a response to an HTTP URL load.
-    public let response: HTTPURLResponse?
+    private(set) var items: [T]?
     
-    /// Result for a service request.
-    public let result: Result<T>
+    init?(map: Map) { }
     
-    init(_ response: HTTPURLResponse?, _ result: Result<T>) {
-        self.response = response
-        self.result = result
+    mutating func mapping(map: Map) {
+        items <- map["items"]
     }
 }

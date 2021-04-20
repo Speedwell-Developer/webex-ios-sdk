@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,11 @@ class MetricsClient {
         self.service = service
     }
     
-    func post(_ metrics: RequestParameter, completionHandler: @escaping (ServiceResponse<Any>) -> Void) {
+    func post(_ metrics: [String: Any?], client: Bool, completionHandler: @escaping (ServiceResponse<Any>) -> Void) {
         if let device = self.service.device {
-            let request = ServiceRequest.Builder(authenticator, service: .metrics, device: device)
-                .path("metrics")
+            let request = Service.metrics.homed(for: device)
+                .authenticator(self.authenticator)
+                .path(client ? "clientmetrics": "metrics")
                 .method(.post)
                 .body(metrics)
                 .build()

@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 
 import Foundation
 
-/// An iOS client wrapper of the Cisco Webex [Teams REST API](https://developer.webex.com/resource-teams.html) .
+/// An iOS client wrapper of the Cisco Webex [Teams REST API](https://developer.webex.com/docs/api/v1/teams) .
 ///
 /// - since: 1.2.0
 public class TeamClient {
@@ -32,7 +32,7 @@ public class TeamClient {
     }
 
     private func requestBuilder() -> ServiceRequest.Builder {
-        return ServiceRequest.Builder(authenticator, service: .hydra).path("teams")
+        return Service.hydra.global.authenticator(self.authenticator).path("teams")
     }
     
     /// Lists teams to which the authenticated user belongs.
@@ -45,7 +45,7 @@ public class TeamClient {
     public func list(max: Int? = nil, queue: DispatchQueue? = nil, completionHandler: @escaping (ServiceResponse<[Team]>) -> Void) {
         let request = requestBuilder()
             .method(.get)
-            .query(RequestParameter(["max": max]))
+            .query(["max": max])
             .keyPath("items")
             .queue(queue)
             .build()
@@ -65,7 +65,7 @@ public class TeamClient {
     public func create(name: String, queue: DispatchQueue? = nil, completionHandler: @escaping (ServiceResponse<Team>) -> Void) {
         let request = requestBuilder()
             .method(.post)
-            .body(RequestParameter(["name": name]))
+            .body(["name": name])
             .queue(queue)
             .build()
         
@@ -101,7 +101,7 @@ public class TeamClient {
     public func update(teamId: String, name: String, queue: DispatchQueue? = nil, completionHandler: @escaping (ServiceResponse<Team>) -> Void) {
         let request = requestBuilder()
             .method(.put)
-            .body(RequestParameter(["name": name]))
+            .body(["name": name])
             .path(teamId)
             .queue(queue)
             .build()

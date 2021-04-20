@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,27 +19,41 @@
 // THE SOFTWARE.
 
 import Foundation
+import ObjectMapper
 
-class UserAgent {
-    // TODO: need to check the id
+struct DeviceModel : Mappable {
     
-    static var string: String {
-        let buildVersion = Webex.version
-        let currentDevice = UIDevice.current
-        let systemName = currentDevice.systemName
-        let systemVersion = currentDevice.systemVersion
-        let platform = UserAgent.platform()
-        
-        return "webex_ios_sdk/\(buildVersion) (\(systemName) \(systemVersion); \(platform))"
+    private(set) var deviceUrlString: String?
+    private(set) var deviceIdentifier: String?
+    private(set) var deviceSettingsString: String?
+    private var webSocketUrlString: String?
+    private var serviceHostMap: ServiceHostModel?
+    var deviceUrl: URL? {
+        if let string = self.deviceUrlString {
+            return URL(string: string)
+        }
+        return nil
     }
     
-    private static func platform() -> String {
-        var sysinfo = utsname()
-        uname(&sysinfo)
-        let machineMirror = Mirror(reflecting: sysinfo.machine)
-        return machineMirror.children.reduce("") { identifier, element in
-            guard let value = element.value as? Int8, value != 0 else { return identifier }
-            return identifier + String(UnicodeScalar(UInt8(value)))
+    var webSocketUrl: URL? {
+        if let string = self.webSocketUrlString {
+            return URL(string: string)
         }
+        return nil
+    }
+    
+    subscript(service name: String) -> String? {
+        return self.serviceHostMap?.serviceLinks?[name]
+    }
+    
+    init?(map: Map){
+    }
+    
+    mutating func mapping(map: Map) {
+        deviceUrlString <- map["url"]
+        deviceIdentifier <- map["deviceIdentifier"]
+        webSocketUrlString <- map["webSocketUrl"]
+        deviceSettingsString <- map["deviceSettingsString"]
+        serviceHostMap <- map["serviceHostMap"]
     }
 }

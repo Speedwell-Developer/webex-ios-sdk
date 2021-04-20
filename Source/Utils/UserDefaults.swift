@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ class UserDefaults {
     private let storage = Foundation.UserDefaults.standard
     
     private let deviceUrlKey = "deviceUrlKey"
+    private let deviceIdentifierKey = "deviceIdentifierKey"
     private let isVideoLicenseActivationDisabledKey = "isVideoLicenseActivationDisabledKey"
     private let isVideoLicenseActivatedKey = "isVideoLicenseActivatedKey"
     
@@ -38,6 +39,19 @@ class UserDefaults {
                 storage.removeObject(forKey: deviceUrlKey)
             } else {
                 storage.set(newValue, forKey: deviceUrlKey)
+            }
+        }
+    }
+    
+    var deviceIdentifier: String? {
+        get {
+            return storage.string(forKey: deviceIdentifierKey)
+        }
+        set {
+            if newValue == nil {
+                storage.removeObject(forKey: deviceIdentifierKey)
+            } else {
+                storage.set(newValue, forKey: deviceIdentifierKey)
             }
         }
     }

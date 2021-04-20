@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ import Foundation
 /// An Single sign-on [SSO](https://help.webex.com/docs/DOC-9143#reference_E9B2CEDE975E4CD311C56D9B0EF2476C)
 /// based authentication strategy used to authenticate a user on Cisco Webex.
 ///
-/// - see: [Cisco Webex Integration](https://developer.webex.com/authentication.html)
+/// - see: [Cisco Webex Integration](https://developer.webex.com/docs/integrations)
 /// - since: 1.3.1
 public class SSOAuthenticator : OAuthAuthenticator {
     
@@ -45,7 +45,7 @@ public class SSOAuthenticator : OAuthAuthenticator {
     /// - parameter identityProviderUri: the URI that will handle authentication claims with webex service on behalf of the hosting application.
     /// - parameter additionalQueryItems: a collection of additional *URLQueryItem* to be appended to the identityProviderUri.
     ///
-    /// - see: [Cisco Webex Integration](https://developer.webex.com/authentication.html)
+    /// - see: [Cisco Webex Integration](https://developer.webex.com/docs/integrations)
     /// - since: 1.3.1
     public init(clientId: String, clientSecret: String, scope: String, redirectUri: String, email: String, identityProviderUri: String,
          queryItems: [URLQueryItem] = []) {

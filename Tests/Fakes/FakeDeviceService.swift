@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,10 @@ class FakeDeviceService: DeviceService {
             
             let webSocketUrl = URL(string: Config.FakeWebSocketUrl)
             
-            let services: [String: String] = [Service.locus.serviceUrlKey: Config.FakeLocusServiceUrl,
-                                              Service.conv.serviceUrlKey: Config.FakeConversationServiceUrl,
-                                              Service.calliopeDiscovery.serviceUrlKey: Config.FakeCalliopeDiscoveryServiceUrl,
-                                              Service.metrics.serviceUrlKey: Config.FakeMetricsServiceUrl]
+            let services: [String: String] = [Service.locus.rawValue: Config.FakeLocusServiceUrl,
+                                              Service.conv.rawValue: Config.FakeConversationServiceUrl,
+                                              Service.calliopeDiscovery.rawValue: Config.FakeCalliopeDiscoveryServiceUrl,
+                                              Service.metrics.rawValue: Config.FakeMetricsServiceUrl]
             
             let regionCode = "US-WEST";
             let countryCode = "US";

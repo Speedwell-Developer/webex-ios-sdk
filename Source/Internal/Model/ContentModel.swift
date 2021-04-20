@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,35 +19,43 @@
 // THE SOFTWARE.
 
 import Foundation
+import ObjectMapper
 
-/// Service request results.
-///
-/// - since: 1.2.0
-public enum Result<T> {
-    
-    /// Result for Success, with the expected object.
-    case success(T)
-    
-    /// Result for Failure, with the error message.
-    case failure(Error)
-    
-    /// Returns the associated data if the result is a success, `nil` otherwise.
-    public var data: T? {
-        switch self {
-        case .success(let data):
-            return data
-        case .failure(_):
-            return nil
+class ContentModel : CommentModel {
+
+    enum Category : String {
+        case images
+        case documents
+        case videos
+        case links
+    }
+
+    private(set) var files: ItemsModel<FileModel>?
+    private(set) var contentCategory: String?
+
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        self.files <- map["files"]
+        self.contentCategory <- map["contentCategory"]
+    }
+
+    override func encrypt(key: String?) {
+        super.encrypt(key: key)
+        self.files?.items?.forEach { file in
+            file.encrypt(key: key)
         }
     }
-    
-    /// Returns the associated error value if the result is a failure, `nil` otherwise.
-    public var error: Error? {
-        switch self {
-        case .success(_):
-            return nil
-        case .failure(let error):
-            return error
+
+    override func decrypt(key: String?) {
+        super.decrypt(key: key)
+        self.files?.items?.forEach { file in
+            file.decrypt(key: key)
         }
     }
+
 }
+

@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ import ObjectMapper
 
 /// A data type presents a Webhook at Cisco Webex for Developer.
 ///
-/// - see: see [Webhook Explained](https://developer.webex.com/webhooks-explained.html)
+/// - see: see [Webhooks Guide](https://developer.webex.com/docs/api/guides/webhooks)
 /// - since: 1.2.0
 public struct Webhook {
     

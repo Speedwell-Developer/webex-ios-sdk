@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ import SwiftyJSON
 import ObjectMapper
 
 class FakeWebSocketService:WebSocketService {
-    private var callModel:CallModel?
+    private var callModel:LocusModel?
     
     override func connect(_ webSocketUrl: URL, _ block: @escaping (Error?) -> Void) {
         block(nil)

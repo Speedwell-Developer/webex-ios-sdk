@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,43 +19,31 @@
 // THE SOFTWARE.
 
 import Foundation
-import ObjectMapper
 
-struct DeviceModel {
-    var deviceUrl: String?
-    var webSocketUrl: String?
-    var services: [String: String]?
-}
+struct Pair<T:Hashable,U:Hashable> : Hashable {
 
-extension DeviceModel: Mappable {
-    
-    init?(map: Map){
+    let left: T
+    let right: U
+
+    init(_ left: T, _ right: U) {
+        self.left = left
+        self.right = right
+    }
+
+    var hashValue: Int {
+        get {
+            return left.hashValue &* 31 &+ right.hashValue
+        }
     }
     
-    mutating func mapping(map: Map) {
-        deviceUrl <- map["url"]
-        webSocketUrl <- map["webSocketUrl"]
-        services <- map["services"]
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(left)
+        hasher.combine(right)
+    }
+
+    static func ==<T:Hashable,U:Hashable>(lhs: Pair<T,U>, rhs: Pair<T,U>) -> Bool {
+        return lhs.left == rhs.left && lhs.right == rhs.right
     }
 }
 
-struct RegionModel  {
-    var clientAddress: String?
-    var clientRegion: String?
-    var countryCode: String?
-    var regionCode: String?
-    var timezone: String?
-}
 
-extension RegionModel: Mappable {
-    init?(map: Map){
-    }
-    
-    mutating func mapping(map: Map) {
-        clientAddress <- map["clientAddress"]
-        clientRegion <- map["clientRegion"]
-        countryCode <- map["countryCode"]
-        regionCode <- map["regionCode"]
-        timezone <- map["timezone"]
-    }
-}

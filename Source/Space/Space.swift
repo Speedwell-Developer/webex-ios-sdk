@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,11 +47,14 @@ public enum SpaceEvent {
     case create(Space)
     /// The callback when a space was changed (usually a rename).
     case update(Space)
+    /// Callback a spaceId when a space call started.
+    case spaceCallStarted(String)
+    /// Callback a spaceId when a space call ended.
+    case spaceCallEnded(String)
 }
 
 /// A data type represents a Space at Cisco Webex cloud.
 ///
-/// - note: Space has been renamed to Space in Cisco Webex.
 /// - since: 1.2.0
 public struct Space {
     
@@ -125,7 +128,7 @@ extension Space: Mappable {
 /// For spaces where lastActivityDate > lastSeenDate the space can be considered to be "unread".
 ///
 /// - since: 2.3.0
-public struct SpaceReadStatus: ImmutableMappable {
+public struct SpaceReadStatus {
     
     /// The identifier of this space.
     public var id: String?
@@ -138,39 +141,14 @@ public struct SpaceReadStatus: ImmutableMappable {
     
     /// The date of the last message in the space that login user has read.
     public var lastSeenActivityDate: Date?
-    
-    private let dateTransform = CustomDateFormatTransform(formatString: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
-    
-    /// Constructs a `SpaceReadStatus` object.
-    ///
-    /// - note: for internal use only.
-    public init(map: Map) throws {
-        
-        self.id = try? map.value("id", using:IdentityTransform(for: .room))
-        self.type = try? map.value("tags", using:SpaceTypeTransform())
-        
-        if let lastDate:Date = try? map.value("lastReadableActivityDate", using:dateTransform) {
-            self.lastActivityDate = lastDate
-        } else {
-            self.lastActivityDate = try? map.value("lastRelevantActivityDate", using:dateTransform)
-        }
-        
-        if let lastSeenDate:Date = try? map.value("lastSeenActivityDate", using:dateTransform) {
-            self.lastSeenActivityDate = lastSeenDate
-        } else {
-            self.lastSeenActivityDate = Date(timeIntervalSince1970: 0)
-        }
+
+    init(model: ConversationModel, clusterId: String?) {
+        self.id = WebexId(type: .room, cluster: clusterId, uuid: model.id!).base64Id
+        self.type = model.isOneOnOne ? SpaceType.direct : SpaceType.group
+        self.lastActivityDate = model.lastReadableActivityDate ?? model.lastRelevantActivityDate
+        self.lastSeenActivityDate = model.lastSeenActivityDate ?? Date(timeIntervalSince1970: 0)
     }
-    
-    /// Maps a `SpaceReadStatus` from JSON.
-    ///
-    /// - note: for internal use only.
-    public mutating func mapping(map: Map) {
-        self.id     >>> (map["id"], IdentityTransform(for: .room))
-        self.type   >>>  map["roomType"]
-        self.lastActivityDate  >>>  (map["lastActivityDate"], dateTransform)
-        self.lastSeenActivityDate  >>>  (map["lastSeenActivityDate"], dateTransform)
-    }
+
 }
 
 /// The Webex meeting details for a space such as the SIP address, meeting URL, toll-free and toll dial-in numbers.

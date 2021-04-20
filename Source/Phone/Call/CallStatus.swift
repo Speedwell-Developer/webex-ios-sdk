@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ public enum CallStatus {
     /// - since: 2.4.0
     case waiting
     
-    func handle(model: CallModel, for call: Call) {
+    func handle(model: LocusModel, for call: Call) {
         guard let local = model.myself else {
             return;
         }
@@ -90,6 +90,9 @@ private func handleNonStartFor(_ call: Call, _ participant: ParticipantModel) {
             }
             else if participant.isDeclined {
                 call.end(reason: Call.DisconnectReason.otherDeclined)
+            }
+            else if call.model.isInactive {
+                call.end(reason: Call.DisconnectReason.remoteCancel)
             }
         }
         else if call.isRemoteDeclined || call.isRemoteLeft {

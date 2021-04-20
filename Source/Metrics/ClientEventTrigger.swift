@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Cisco Systems Inc
+// Copyright 2016-2021 Cisco Systems Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,12 @@
 
 import Foundation
 
-struct RequestParameter {
-    private var storage: [String: Any] = [:]
-    
-    init(_ parameters: [String: Any?] = [:]) {
-        for (key, value) in parameters {
-            guard let realValue = value else {
-                continue
-            }
-            switch realValue {
-            case let bool as Bool:
-                storage.updateValue(String(bool), forKey: key)
-            default:
-                storage.updateValue(realValue, forKey: key)
-            }
-        }
-    }
-    
-    func value() -> [String: Any] {
-        return storage
-    }
+enum ClientEventTrigger: String {
+    case userInteraction = "user-interaction"
+    case mercuryEvent = "mercury-event"
+    case lociUpdate = "loci-update"
+    case mediaEngineEvent = "media-engine-event"
+    case timeout = "timeout"
+    case signaling = "signaling"
+    case other = "other"
 }
